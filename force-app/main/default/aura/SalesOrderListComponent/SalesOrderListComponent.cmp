@@ -1,0 +1,75 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="SalesOrderListComponentApex" >
+    <aura:attribute name="salesOrders" type="Sales_Order__c[]" />
+    <aura:attribute name="offsetValue" type="Integer" default="0" />
+    <aura:attribute name="isFirstPage" type="Boolean" default="true" />
+    <aura:attribute name="isLastPage" type="Boolean" default="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <div class="slds-box slds-theme_default">
+        <aura:iteration items="{!v.salesOrders}" var="order">
+            <div class="slds-card slds-m-bottom_small">
+                <div class="slds-card__header slds-grid">
+                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                        <div class="slds-media__figure">
+                            <lightning:icon iconName="standard:contact" size="small" alternativeText="Sales Order" />
+                        </div>
+                        <div class="slds-media__body">
+                            <h2 class="slds-text-heading_small">
+                                Sales Order:
+                                <a href="{! '/lightning/r/Sales_Order__c/' + order.Id + '/view' }" target="_blank">
+                                    {!order.Name}
+                                </a>
+                            </h2>
+                        </div>
+                    </header>
+                </div>
+                
+                <div class="slds-m-left_large slds-m-top_small">
+                    <p>Total Devices Included: {!order.Sales_Order_Items__r.length}</p>
+                    <aura:if isTrue="{!order.Discount__c != null}">
+                        <p>Discount: {!order.Discount__c}</p>
+                    </aura:if>
+                    <p>Total Amount: {!order.Total_Amount__c}</p>
+                </div>
+                
+                <div class="slds-card__body slds-card__body_inner">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr>
+                                <th scope="col"><div class="slds-truncate">Sales Order Item</div></th>
+                                <th scope="col"><div class="slds-truncate">Discount</div></th>
+                                <th scope="col"><div class="slds-truncate">Total Amount</div></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!order.Sales_Order_Items__r}" var="item">
+                                <tr>
+                                    <td>
+                                        <a href="{! '/lightning/r/Sales_Order_Item__c/' + item.Id + '/view' }" target="_blank">
+                                            <div class="slds-truncate">{!item.Name}</div>
+                                        </a>
+                                    </td>
+                                    <td><div class="slds-truncate">{!item.Discount__c}</div></td>
+                                    <td><div class="slds-truncate">{!item.Total_Amount__c}</div></td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </aura:iteration>
+        
+        <aura:if isTrue="{!empty(v.salesOrders)}">
+            <div class="slds-m-around_medium slds-text-heading_medium slds-text-bold slds-text-align_center">
+                No Sales Orders for this Opportunity.
+            </div>
+        </aura:if>
+        
+        <aura:if isTrue="{!not(empty(v.salesOrders))}">
+            <div class="slds-m-top_medium slds-clearfix">
+                <lightning:button label="Previous" onclick="{!c.handlePrevious}" disabled="{!v.isFirstPage}" class="slds-float_left" />
+                <lightning:button label="Next" onclick="{!c.handleNext}" disabled="{!v.isLastPage}" class="slds-float_right" />
+            </div>
+        </aura:if>
+    </div>
+</aura:component>

@@ -1,0 +1,96 @@
+<apex:page renderAs="pdf" controller="PDFGeneratorController">
+    <apex:stylesheet value="{!URLFOR($Resource.GeneratePDFstyles)}" />
+    <div class="pdf">
+        <div class="pdf__header">
+            <div class="pdf__header-image">
+                <img src="{!URLFOR($Resource.redmedLogo)}" alt="Medical Device"/>
+            </div>
+            <div class="pdf__header-text">
+                <b>CONTRACT FOR SALE<br />OF MEDICAL DEVICES</b>
+            </div>
+        </div>
+        
+        <div class="pdf__into">
+            <p>
+                <b>This Contract</b> is created on <b>{!contract.CreatedDate}</b> between the following parties:
+            </p>
+            
+            <p>
+                <b>RedMed Ukraine</b>, a company duly organized and existing under the laws of Ukraine,
+                with its principal place of business at <b>{!stockAddress.Stock_Street__c}</b>,
+                from now on referred to as the "Seller," and <b>{!contract.Account__r.Name}</b>,
+                a company/hospital/organization duly organized and existing under the laws of <b>{!contract.Account__r.Address__CountryCode__s}</b>,
+                with its principal place of business at <b>{!contract.Account__r.Address__Street__s}</b>, from now on referred to as the "Buyer."
+            </p>
+            
+            <p>The parties agree as follows:</p>
+        </div>
+        
+        <div>
+            <h4>1. Subject of the Contract</h4>
+            <span>The Seller agrees to sell, and the Buyer agrees to purchase the following medical devices:</span>
+            <ul>
+                <apex:variable var="deviceNum" value="{!1}" /> 
+                <apex:repeat var="device" value="{!devices}">
+                    <li><b>Device {!deviceNum}</b>: {!device.Name__c} - Serial Number: {!device.Name} - {!device.Default_Price__c}</li>
+                    <apex:variable var="deviceNum" value="{!deviceNum+1}"/>
+                </apex:repeat>
+            </ul>
+        </div>
+        
+        <div>
+            <h4>2. Purchase Price</h4>
+            <span>
+                The total price for the medical devices listed above shall be <b>{!contract.Total_Amount__c}</b>,
+                inclusive of all applicable taxes and duties. Payment shall be made in accordance with the terms set out in Section 3 below.
+            </span>
+        </div>
+        
+        <div>
+            <h4>3. Payment Terms</h4>
+            <span>
+                The Buyer shall make payment to the Seller within <b>{!paymentTermDate}</b> of the date of this Contract
+                or the receipt of an invoice, whichever is later.
+            </span>
+        </div>
+        
+        <div>
+            <h4>4. Delivery</h4>
+            <span>
+                The Seller shall deliver the medical devices to the Buyer at
+                <b>{!IF(NOT(ISBLANK(contract.Account__r.Address__CountryCode__s)), contract.Account__r.Address__CountryCode__s + ', ', '')}</b>
+                <b>{!contract.Account__r.Address__Street__s}</b>
+                on or before <b>{!deliveryTermDate}</b>. Risk of loss and title to the devices shall pass to the Buyer upon delivery.
+            </span>
+        </div>
+        
+        <div>
+            <h4>5. Warranties and Liabilities</h4>
+            <span>
+                The Seller warrants that the medical devices conform to the specifications and are free from defects in material and workmanship.
+                The warranty period shall be 3 years.
+            </span>
+            <p>
+                <b>IN WITNESS WHEREOF</b>, the parties hereto have executed this Contract on the day and year first above written.
+            </p>
+        </div>
+        
+        <div class="pdf__signature">
+            <h5>SELLER:</h5>
+            <span>RedMed Ukraine</span>
+            <p class="pdf__signature__block">
+                <span class="pdf__signature__block-el">Signature: _______________________</span>
+                <span class="pdf__signature__block-el">Date: __________________________</span>
+            </p>
+        </div>
+        
+        <div class="pdf__signature">
+            <h5>BUYER:</h5>
+            <span>{!contract.Account__r.Name}</span>
+            <p class="pdf__signature__block">
+                <span class="pdf__signature__block-el">Signature: _______________________</span>
+                <span class="pdf__signature__block-el">Date: __________________________</span>
+            </p>
+        </div>
+    </div>
+</apex:page>

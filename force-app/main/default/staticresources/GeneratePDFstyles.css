@@ -1,0 +1,64 @@
+@font-face {
+    font-family: 'Montserrat';
+    src: url('{!URLFOR($Resource.MontserratRegular)}') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('{!URLFOR($Resource.MontserratBold)}') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+.pdf {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    letter-spacing: 2px;
+}
+
+.pdf__header {
+    display: table;
+    width: 100%;
+}
+
+.pdf__header-image, .pdf__header-text {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.pdf__header-image {
+    width: 65%;
+}
+
+.pdf__header-text {
+    width: 35%;
+    font-weight: bold;
+    text-align: right;
+    margin-left: auto; 
+}
+
+.pdf__signature {
+    margin: 20px 0 50px 0;
+}
+
+.pdf__signature > * {
+    margin: 0;
+}
+
+.pdf__signature__block {
+    display: table;
+    width: 100%;
+}
+
+.pdf__signature__block-el {
+    display: table-cell;
+    width: 50%;
+}
+
+.pdf__signature__block-el:last-child {
+    text-align: right;
+    margin-left: auto;
+}

@@ -1,0 +1,224 @@
+<template>
+    <div
+        class="slds-box slds-theme_default"
+        style="padding: 1rem; position: relative"
+    >
+        <template if:false={showForm}>
+            <div
+                if:true={orderWasCreated}
+                class="slds-m-bottom_medium slds-text-heading_medium slds-text-bold slds-text-align_center"
+                style="color: #4e4e4e"
+            >
+                New Sales Order was created successfully!
+            </div>
+            <button
+                class="slds-button slds-button_outline-brand slds-button_stretch"
+                onclick={handleNewOrderClick}
+            >
+                Create new Sales Order
+            </button>
+        </template>
+
+        <template if:true={showForm}>
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-2">
+                    <article class="slds-card" style="height: 100%">
+                        <div class="slds-card__header slds-grid">
+                            <header
+                                class="slds-media slds-media_center slds-has-flexi-truncate"
+                            >
+                                <div class="slds-media__figure">
+                                    <lightning-icon
+                                        icon-name="standard:guidance_center"
+                                        size="small"
+                                        alternative-text="Guidance Center"
+                                    ></lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title">
+                                        <span>Sales Order</span>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <div class="slds-form-element">
+                                <label
+                                    class="slds-form-element__label"
+                                    for="discount-input"
+                                    >Discount:</label
+                                >
+                                <div class={errorOrNot}>
+                                    <input
+                                        type="number"
+                                        id="discount-input"
+                                        placeholder="Enter Discount..."
+                                        class="slds-input"
+                                        onchange={handleDiscountChange}
+                                        max="99"
+                                        min="0"
+                                        value={discount}
+                                    />
+                                    <div
+                                        if:true={isError}
+                                        class="slds-form-element__help"
+                                        id="error-message-id-49"
+                                    >
+                                        Value must be from 0 to 99
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <footer class="slds-card__footer" lwc:if={total_amount}>
+                            Total Amount: {total_amount}
+                        </footer>
+                    </article>
+                </div>
+
+                <div class="slds-col slds-size_1-of-2">
+                    <article class="slds-card" style="height: 100%">
+                        <div class="slds-card__header slds-grid">
+                            <header
+                                class="slds-media slds-media_center slds-has-flexi-truncate slds-grid_align-center"
+                            >
+                                <h2
+                                    class="slds-card__header-title"
+                                    style="padding-block: 2px"
+                                >
+                                    <span>Add Order Item:</span>
+                                </h2>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <lightning-record-picker
+                                label="Enter Name or Serial of Device:"
+                                placeholder="Search Devices..."
+                                object-api-name="Device__c"
+                                onchange={handleChange}
+                                filter={filter}
+                                display-info={displayInfo}
+                                matching-info={matchingInfo}
+                            >
+                            </lightning-record-picker>
+                        </div>
+                        <footer
+                            class="slds-card__footer"
+                            lwc:if={device_details.length}
+                        >
+                            <span style="padding-right: 7px"
+                                >Selected: {device_details.length}</span
+                            >
+                            <span
+                                class="slds-border_left"
+                                style="padding-left: 7px"
+                                >Available: {availableDevices}</span
+                            >
+                        </footer>
+                    </article>
+                </div>
+            </div>
+        </template>
+
+        <template if:true={device_details.length}>
+            <div class="slds-col slds-size_1-of-1 slds-m-top_small">
+                <article class="slds-card">
+                    <div class="slds-card__header slds-grid">
+                        <header
+                            class="slds-media slds-media_center slds-has-flexi-truncate slds-grid_align-center"
+                        >
+                            <h2 class="slds-card__header-title">
+                                <span>Order Items</span>
+                            </h2>
+                        </header>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner">
+                        <table class="slds-table slds-table_bordered">
+                            <thead>
+                                <tr>
+                                    <th>Device Name</th>
+                                    <th>Discount</th>
+                                    <th>Total Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template
+                                    for:each={device_details}
+                                    for:item="device"
+                                >
+                                    <tr key={device.Id}>
+                                        <td>
+                                            <a
+                                                data-id={device.Id}
+                                                onclick={handleDeviceDetailClick}
+                                                class="slds-text-link"
+                                            >
+                                                {device.Name__c}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <div
+                                                class="slds-form-element slds-has-error"
+                                            >
+                                                <input
+                                                    type="number"
+                                                    max="99"
+                                                    min="0"
+                                                    style="
+                                                        border: 1px solid
+                                                            #747474;
+                                                        border-radius: 0.25rem;
+                                                        padding: 0 0 2px 6px;
+                                                    "
+                                                    data-id={device.Id}
+                                                    value={device.Discount}
+                                                    onchange={handleChangeDeviceDiscount}
+                                                />
+                                                <div if:true={device.hasError}>
+                                                    <div
+                                                        class="slds-form-element__help"
+                                                    >
+                                                        Allowed from 0 to 99
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{device.Amount}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </div>
+        </template>
+
+        <template lwc:if={showForm}>
+            <div class="slds-m-top_medium slds-clearfix">
+                <lightning-button
+                    class="slds-float_right slds-button_outline-brand"
+                    label="Create Order and Items"
+                    disabled={isCreateOrderButtonDisabled}
+                    onclick={handleCreateNewOrder}
+                ></lightning-button>
+                <lightning-button
+                    class="slds-float_left slds-button_text-destructive"
+                    label="Cancel"
+                    onclick={handleCancelClick}
+                    disabled={creatingOrderInProcess}
+                ></lightning-button>
+            </div>
+        </template>
+
+        <template if:true={creatingOrderInProcess}>
+            <div class="demo-only" style="height: 6rem">
+                <div class="slds-spinner_container">
+                    <div role="status" class="slds-spinner slds-spinner_large">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>
